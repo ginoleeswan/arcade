@@ -1,6 +1,6 @@
-<h1 align="center">🎮 Video Game Database 🎮</h1>
+<h1 align="center">🎮 ARCADE 🎮</h1>
 
-<p align="center"> Made in React Native, constructed with Expo CLI, utilizing the rawgAPI and IGDB. </p>
+<p align="center"> A Video Game Database made in React Native, constructed with Expo CLI, utilizing the rawgAPI and IGDB. </p>
 <p align="center">
   <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" />
   <a href="#" target="_blank">
