@@ -14,11 +14,10 @@
 <!-- <h2 align="center">☀️ <a href="https://ginoleeswan.github.io/weather-app-basic/">See Live</a> ☀️</h2> -->
 
 <p align="center">
-<!-- 
-  <img src="./app/assets/images/screenshots/home.PNG" style="border-radius: 20 "  alt="animated" width="20%"/>
-  <img src="./app/assets/images/screenshots/info1.PNG" style="background: none;"  alt="animated" width="20%"  />
-  <img src="./app/assets/images/screenshots/info2.PNG" style="background: none;"  alt="animated" width="20%"  />
-  <img src="./app/assets/images/screenshots/search.PNG" style="background: none;"  alt="animated" width="20%"  /> -->
+
+  <img src="./app/assets/screenshots/home.PNG"  alt="home" width="33%"/>
+  <img src="./app/assets/screenshots/info-screen.PNG"  alt="info screen" width="33%"  />
+  <img src="./app/assets/screenshots/info-screen-about.PNG"  alt="info screen about" width="33%"  />
 
 </p>
 
