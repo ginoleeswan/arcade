@@ -1,27 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
+  Animated,
   Dimensions,
   ImageBackground,
+  Image,
   StatusBar,
   StyleSheet,
   Text,
   View,
+  ScrollView,
   ActivityIndicator,
+  TouchableHighlight,
+  FlatList,
 } from "react-native";
-import { Image } from "react-native-elements";
+// import { Image } from "react-native-elements";
 import axios from "../api/IGDB";
 import IDGBrequests from "../api/IGDBrequests";
+import { printTable } from "console-table-printer";
+import cTable from "console.table";
+import { table } from "table";
+import Accordion from "react-native-collapsible/Accordion";
+import dateFormat from "dateformat";
+import { Image as ImageElement } from "react-native-elements";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/Header";
 import { COLORS } from "../styles/colors";
 import IGDBrequests from "../api/IGDBrequests";
-import { Icon } from "react-native-elements";
-import { ScrollView } from "react-native";
+import { Icon, Rating, AirbnbRating } from "react-native-elements";
+import { SharedElement } from "react-navigation-shared-element";
+import Gallery from "react-native-image-gallery";
+import Lightbox from "react-native-lightbox-v2";
 
 const regex = /(<([^>]+)>)/gi;
 
 const GameInfoScreen = ({ route, navigation }) => {
-  const { game } = route.params;
+  const { game, key, screenshots } = route.params;
+
+  const [visible, setIsVisible] = useState(false);
+
+  const [activeSections, setActiveSections] = useState([]);
+  const [arrowDirection, setArrowDirection] = useState(true);
+
+  const opacity = useRef(new Animated.Value(0)).current;
 
   const [deck, setDeck] = useState("");
 
@@ -31,35 +52,68 @@ const GameInfoScreen = ({ route, navigation }) => {
   let consoleLogoName = null;
   let consoleLogoType = null;
 
-  const consoles = game.platforms.map((item) => {
-    if (
-      item.platform.slug === "playstation3" ||
-      item.platform.slug === "playstation4" ||
-      item.platform.slug === "playstation5"
-    ) {
+  const activeLightboxProps = {
+    resizeMode: "contain",
+    marginHorizontal: 20,
+    flex: 1,
+    width: null,
+  };
+
+  const SECTIONS = [
+    {
+      title: "About",
+      content: summary,
+    },
+  ];
+
+  // let consoles = game.platforms.filter(
+  //   (item) =>
+  //     item.platform.slug.startsWith("play") ||
+  //     item.platform.slug.startsWith("xbox")
+  // );
+
+  // let firstConsole = consoles[0];
+
+  let screenshotURI = screenshots.results.map(({ image, id }) => {
+    // console.log(screenshot);
+    // return (
+    //   <Lightbox>
+    //     <ImageElement
+    //       source={{ uri: image }}
+    //       style={{ width: 200, height: 200, margin: 10 }}
+    //     />
+    //   </Lightbox>
+    // );
+    return { uri: image, id: id };
+
+    // console.log(image);
+  });
+
+  const consoles = game.platforms.map(({ platform }) => {
+    // platform.filter((console) => console.slug.startsWith("playstation")
+
+    if (platform.slug.startsWith("playstation")) {
+      // item.platform.slug.slice(0);
       // consoleLogo = require(`../assets/icons/playstation3.png`);
       consoleLogoName = "logo-playstation";
       consoleLogoType = "ionicon";
-    } else if (item.platform.slug === "pc") {
+    } else if (platform.slug === "pc") {
       // consoleLogo = require(`../assets/icons/pc.png`);
       consoleLogoName = "microsoft-windows";
       consoleLogoType = "material-community";
-    } else if (item.platform.slug === "macos") {
+    } else if (platform.slug === "macos") {
       // consoleLogo = require(`../assets/icons/pc.png`);
       consoleLogoName = "logo-apple";
       consoleLogoType = "ionicon";
-    } else if (item.platform.slug === "linux") {
+    } else if (platform.slug === "linux") {
       // consoleLogo = require(`../assets/icons/pc.png`);
       consoleLogoName = "linux";
       consoleLogoType = "font-awesome";
-    } else if (item.platform.slug === "nintendo-switch") {
+    } else if (platform.slug === "nintendo-switch") {
       // consoleLogo = require(`../assets/icons/nintendo-switch.png`);
       consoleLogoName = "nintendo-switch";
       consoleLogoType = "material-community";
-    } else if (
-      item.platform.slug === "xbox-one" ||
-      item.platform.slug === "xbox360"
-    ) {
+    } else if (platform.slug === "xbox-one" || platform.slug === "xbox360") {
       // consoleLogo = require(`../assets/icons/xbox-one.png`);
       consoleLogoName = "microsoft-xbox";
       consoleLogoType = "material-community";
@@ -72,6 +126,7 @@ const GameInfoScreen = ({ route, navigation }) => {
           name={consoleLogoName}
           color={COLORS.lightGrey}
           type={consoleLogoType}
+          style={{ padding: 5 }}
         />
 
         {/* <Image source={consoleLogo} style={{ width: 20, height: 20 }} /> */}
@@ -122,20 +177,38 @@ const GameInfoScreen = ({ route, navigation }) => {
   // }
 
   useEffect(() => {
-    game.platforms.forEach((item) => {
-      console.log(item.platform.slug);
-    });
-
+    // const gameArray = Object.values(game.platforms);
+    // // printTable(gameArray);
+    // console.log(firstConsole);
+    // game.platforms.forEach((item) => {
+    //   // console.log(table(item.platform.slug));
+    //   console.table(item.platform.slug);
+    // });
     // getIGDBInfo();
+    // console.table(game.ratings);
+    // console.log(screenshots);
+  }, []);
+
+  useEffect(() => {
+    Animated.timing(opacity, {
+      toValue: 1,
+      duration: 250,
+      delay: 500,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   return (
     <ImageBackground
+      key={key}
       source={require("../assets/images/noise.png")}
       resizeMode="repeat"
       style={styles.background}
     >
-      <SafeAreaView style={styles.appContainer}>
+      <SafeAreaView
+        edges={["right", "top", "left"]}
+        style={styles.appContainer}
+      >
         <StatusBar
           translucent
           backgroundColor="transparent"
@@ -159,25 +232,46 @@ const GameInfoScreen = ({ route, navigation }) => {
             }}
           >
             <View style={styles.gameBackgroundImageContainer}>
-              <Image
-                source={{ uri: game.background_image }}
-                style={styles.gameBackgroundImage}
-                PlaceholderContent={<ActivityIndicator />}
-              />
+              <SharedElement id={game.id}>
+                <Image
+                  source={{ uri: game.background_image }}
+                  style={styles.gameBackgroundImage}
+                  // PlaceholderContent={<ActivityIndicator />}
+                />
+              </SharedElement>
               <View style={styles.imageOverlay}></View>
-              <View style={styles.gameLogoContainer}>
+              {/* <View style={styles.gameLogoContainer}>
                 <Image
                   source={require("../assets/icons/grand-theft-auto-v.png")}
                   style={{ width: 400, height: 200, resizeMode: "cover" }}
                 />
-              </View>
+              </View> */}
             </View>
-            <View style={styles.gameMainInfoContainer}>
+            <Animated.View style={{ ...styles.gameMainInfoContainer, opacity }}>
+              <View
+                style={{
+                  width: 80,
+                  backgroundColor: COLORS.lightGrey,
+                  alignItems: "center",
+                  marginBottom: 5,
+                  borderRadius: 5,
+                }}
+              >
+                <Text
+                  style={{
+                    ...styles.p,
+                    textTransform: "uppercase",
+                    color: COLORS.darkGrey,
+                  }}
+                >
+                  {dateFormat(game.released, "mmm d, yyyy")}
+                </Text>
+              </View>
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: "space-around",
+                  justifyContent: "center",
                 }}
               >
                 {consoles}
@@ -187,13 +281,90 @@ const GameInfoScreen = ({ route, navigation }) => {
               >
                 {game.name}
               </Text>
-            </View>
-            <View style={styles.aboutContainer}>
-              <Text style={styles.h2}>About</Text>
-              <Text style={{ ...styles.p, textAlign: "center" }}>
-                {summary}
-              </Text>
-            </View>
+              <View style={{ top: -30 }}>
+                <AirbnbRating
+                  count={5}
+                  size={20}
+                  reviewSize={12}
+                  starContainerStyle={{ top: -10 }}
+                  isDisabled
+                  defaultRating={Math.floor(game.rating)}
+                  // tintColor="transparent"
+
+                  reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
+                  showRating
+                />
+              </View>
+
+              <View
+                style={{
+                  justifyContent: "flex-start",
+
+                  top: 20,
+                }}
+              >
+                <View style={styles.infoContainer}>
+                  <Accordion
+                    sections={SECTIONS}
+                    activeSections={activeSections}
+                    underlayColor={COLORS.mediumGrey}
+                    renderHeader={(content, index, isActive, sections) => {
+                      return (
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
+                        >
+                          <Text style={styles.h2}>{content.title}</Text>
+                          <Icon
+                            name={isActive ? "angle-up" : "angle-down"}
+                            color={COLORS.lightGrey}
+                            type="font-awesome-5"
+                            style={{ marginLeft: 10 }}
+                          />
+                        </View>
+                      );
+                    }}
+                    renderContent={(section) => {
+                      return (
+                        <Text style={{ ...styles.p }}>{section.content}</Text>
+                      );
+                    }}
+                    onChange={setActiveSections}
+                  />
+                </View>
+                <Text style={styles.h2}>Screenshots</Text>
+
+                <FlatList
+                  horizontal
+                  data={screenshotURI}
+                  renderItem={({ item }) => (
+                    <ImageElement
+                      source={{ uri: item.uri }}
+                      style={{
+                        width: 300,
+                        height: 200,
+                        marginRight: 15,
+                        borderRadius: 10,
+                      }}
+                      PlaceholderContent={
+                        <ActivityIndicator
+                          color={COLORS.darkGrey}
+                          size="large"
+                        />
+                      }
+                    />
+                  )}
+                  keyExtractor={(item) => item.id.toString()}
+                  contentContainerStyle={{
+                    top: 10,
+                    height: 210,
+                    // width: "100%",
+                    // borderColor: "white",
+                    // borderWidth: 2,
+                    alignItems: "center",
+                  }}
+                />
+              </View>
+            </Animated.View>
           </ScrollView>
         </View>
       </SafeAreaView>
@@ -236,7 +407,7 @@ const styles = StyleSheet.create({
   },
   gameBackgroundImage: {
     width: "100%",
-    height: 400,
+    height: 350,
     borderRadius: 40,
   },
   gameBackgroundImageContainer: {
@@ -258,18 +429,16 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     position: "absolute",
+    alignItems: "center",
     padding: 10,
-    top: 320,
+    top: 150,
     left: 0,
     zIndex: 0,
   },
-  aboutContainer: {
+  infoContainer: {
     width: "100%",
-    height: "100%",
-    position: "absolute",
-    padding: 10,
-    top: 400,
-    left: 0,
+    // height: "100%",
+    marginVertical: 15,
     zIndex: 0,
   },
   imageOverlay: {
@@ -277,7 +446,7 @@ const styles = StyleSheet.create({
     top: 0,
     left: 0,
     width: "100%",
-    height: 400,
+    height: 350,
     backgroundColor: "black",
     borderRadius: 40,
 
