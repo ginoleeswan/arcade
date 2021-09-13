@@ -331,38 +331,40 @@ const GameInfoScreen = ({ route, navigation }) => {
                     onChange={setActiveSections}
                   />
                 </View>
-                <Text style={styles.h2}>Screenshots</Text>
+                <View style={styles.screenshotsContainer}>
+                  <Text style={styles.h2}>Screenshots</Text>
 
-                <FlatList
-                  horizontal
-                  data={screenshotURI}
-                  renderItem={({ item }) => (
-                    <ImageElement
-                      source={{ uri: item.uri }}
-                      style={{
-                        width: 300,
-                        height: 200,
-                        marginRight: 15,
-                        borderRadius: 10,
-                      }}
-                      PlaceholderContent={
-                        <ActivityIndicator
-                          color={COLORS.darkGrey}
-                          size="large"
-                        />
-                      }
-                    />
-                  )}
-                  keyExtractor={(item) => item.id.toString()}
-                  contentContainerStyle={{
-                    top: 10,
-                    height: 210,
-                    // width: "100%",
-                    // borderColor: "white",
-                    // borderWidth: 2,
-                    alignItems: "center",
-                  }}
-                />
+                  <FlatList
+                    horizontal
+                    data={screenshotURI}
+                    renderItem={({ item }) => (
+                      <ImageElement
+                        source={{ uri: item.uri }}
+                        style={{
+                          width: 300,
+                          height: 200,
+                          marginRight: 15,
+                          borderRadius: 10,
+                        }}
+                        PlaceholderContent={
+                          <ActivityIndicator
+                            color={COLORS.darkGrey}
+                            size="large"
+                          />
+                        }
+                      />
+                    )}
+                    keyExtractor={(item) => item.id.toString()}
+                    contentContainerStyle={{
+                      top: 10,
+                      height: 210,
+                      // width: "100%",
+                      // borderColor: "white",
+                      // borderWidth: 2,
+                      alignItems: "center",
+                    }}
+                  />
+                </View>
               </View>
             </Animated.View>
           </ScrollView>
@@ -439,6 +441,12 @@ const styles = StyleSheet.create({
     width: "100%",
     // height: "100%",
     marginVertical: 15,
+    zIndex: 0,
+  },
+  screenshotsContainer: {
+    width: "100%",
+    // height: "100%",
+    // marginVertical: 15,
     zIndex: 0,
   },
   imageOverlay: {
