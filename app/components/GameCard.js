@@ -9,6 +9,7 @@ import {
   View,
   ActivityIndicator,
 } from "react-native";
+
 import { COLORS } from "../styles/colors";
 import { SquircleView } from "react-native-figma-squircle";
 import MaskedView from "@react-native-masked-view/masked-view";
@@ -18,10 +19,11 @@ import { Image } from "react-native-elements";
 import TouchableScale from "react-native-touchable-scale";
 import axios from "../api/axios";
 import requests from "../api/Requests";
+import { SharedElement } from "react-navigation-shared-element";
 
 const API_KEY = "a5dc51990cf541aba0f759e85e41a324";
 
-export const GameCard = ({ key, game, navigation }) => {
+export const GameCard = ({ game, navigation, key }) => {
   const { getGameByID } = requests;
 
   const searchGame = async () => {
@@ -29,10 +31,16 @@ export const GameCard = ({ key, game, navigation }) => {
       const request = await axios.get(
         `${getGameByID}${game.id}?key=${API_KEY}`
       );
+      const requestScreenshots = await axios.get(
+        `${getGameByID}${game.id}/screenshots/?key=${API_KEY}`
+      );
       const gameData = request.data;
-      // console.log(gameData);
-      navigation.navigate("Game Info", {
+      const gameScreenShots = requestScreenshots.data;
+      // console.log(gameScreenShots);
+      navigation.push("Game Info", {
         game: gameData,
+        screenshots: gameScreenShots,
+        key: key,
       });
     } catch (error) {
       console.error(error);
@@ -45,81 +53,77 @@ export const GameCard = ({ key, game, navigation }) => {
     //   style={[{ transform: [{ scale }] }, styles.shadow]}
     // >
 
-    <TouchableScale
-      activeScale={0.9}
-      tension={50}
-      friction={4}
-      onPress={() => {
-        searchGame(game);
-        console.log(game.name);
-        console.log(game.id);
-        console.log(game.slug);
-      }}
-      style={styles.shadow}
-    >
-      <MaskedView
-        style={styles.gameCard}
-        maskElement={
-          <SquircleView
-            style={StyleSheet.absoluteFill}
-            squircleParams={{
-              cornerRadius: 45,
-              cornerSmoothing: 1,
-              fillColor: "pink",
-            }}
-          />
-        }
+    <SharedElement id={game.id}>
+      <TouchableScale
+        key={key}
+        activeScale={0.9}
+        tension={50}
+        friction={4}
+        onPress={() => {
+          searchGame(game);
+          console.log(game.name);
+          console.log(game.id);
+          console.log(game.slug);
+        }}
+        style={styles.shadow}
       >
-        <InsetShadow
-          shadowOpacity={1}
-          shadowColor={COLORS.darkGrey}
-          shadowRadius={10}
-          elevation={15}
-        >
-          <Image
-            source={{ uri: game.background_image }}
-            resizeMode="cover"
-            style={styles.cardImage}
-            PlaceholderContent={<ActivityIndicator />}
-          />
-          {/* <LinearGradient
-            // Background Linear Gradient
-            colors={["#E18A82", COLORS.plum, "#991F62"]}
-            locations={[0.04, 0.2, 1]}
-            style={styles.cardGradient}
-          > */}
-          <ImageBackground
-            source={require("../assets/images/noise.png")}
-            resizeMode="repeat"
-            style={styles.cardBackground}
-          >
-            <View
-              style={{
-                position: "absolute",
-                bottom: 30,
-                left: 0,
-                width: "100%",
+        <MaskedView
+          style={styles.gameCard}
+          maskElement={
+            <SquircleView
+              style={StyleSheet.absoluteFill}
+              squircleParams={{
+                cornerRadius: 45,
+                cornerSmoothing: 1,
+                fillColor: "pink",
               }}
+            />
+          }
+        >
+          <InsetShadow
+            shadowOpacity={1}
+            shadowColor={COLORS.darkGrey}
+            shadowRadius={10}
+            elevation={15}
+          >
+            <Image
+              source={{ uri: game.background_image }}
+              resizeMode="cover"
+              style={styles.cardImage}
+              PlaceholderContent={<ActivityIndicator />}
+            />
+            <ImageBackground
+              source={require("../assets/images/noise.png")}
+              resizeMode="repeat"
+              style={styles.cardBackground}
             >
-              <Text
+              <View
                 style={{
-                  ...styles.h2,
-                  fontSize: 20,
-                  textAlign: "center",
-                  textShadowColor: "rgba(0, 0, 0, 1)",
-                  textShadowOffset: { width: -1, height: 1 },
-                  textShadowRadius: 5,
+                  position: "absolute",
+                  bottom: 30,
+                  left: 0,
+                  width: "100%",
                 }}
               >
-                {" "}
-                {game.name}
-              </Text>
-            </View>
-          </ImageBackground>
-          {/* </LinearGradient> */}
-        </InsetShadow>
-      </MaskedView>
-    </TouchableScale>
+                <Text
+                  style={{
+                    ...styles.h2,
+                    fontSize: 20,
+                    textAlign: "center",
+                    textShadowColor: "rgba(0, 0, 0, 1)",
+                    textShadowOffset: { width: -1, height: 1 },
+                    textShadowRadius: 5,
+                  }}
+                >
+                  {game.name}
+                </Text>
+              </View>
+            </ImageBackground>
+            {/* </LinearGradient> */}
+          </InsetShadow>
+        </MaskedView>
+      </TouchableScale>
+    </SharedElement>
     // </Animated.View>
   );
 };
@@ -160,9 +164,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   gameCard: {
-    width: 300,
-    height: 230,
+    width: 170,
+    height: 200,
     // borderRadius: 40,
+    marginHorizontal: 8,
 
     marginBottom: 20,
     // backgroundColor: COLORS.plum,
