@@ -4,12 +4,7 @@ import {
   StyleSheet,
   Text,
   ImageBackground,
-  StatusBar,
-  Dimensions,
   FlatList,
-  Pressable,
-  Image,
-  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { COLORS } from "../styles/colors";
@@ -18,13 +13,13 @@ import requests from "../api/Requests";
 import { GamesContext } from "../context/GamesContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { GameCard } from "../components/GameCard";
-import { Chip } from "react-native-elements";
-import Icon from "react-native-vector-icons/AntDesign";
+import { Chip, TabView } from "react-native-elements";
 
-const grainOverlay = {};
+import { Tab } from "react-native-elements";
 
 const HomeScreen = ({ navigation }) => {
   const [games, setGames] = useContext(GamesContext);
+  const [tabIndex, setTabIndex] = useState(0);
   const [indexToAnimate, setIndexToAnimate] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const {
@@ -37,7 +32,7 @@ const HomeScreen = ({ navigation }) => {
 
   const [chips, setChips] = useState([
     {
-      id: 1,
+      id: 0,
       title: "Trending",
       search: fetchTrendingGames,
       filled: true,
@@ -45,7 +40,7 @@ const HomeScreen = ({ navigation }) => {
       iconType: "feather",
     },
     {
-      id: 2,
+      id: 1,
       title: "Must Play",
       search: fetchMustPlayGames,
       filled: false,
@@ -53,7 +48,7 @@ const HomeScreen = ({ navigation }) => {
       iconType: "feather",
     },
     {
-      id: 3,
+      id: 2,
       title: "Indie",
       search: fetchIndieGames,
       filled: false,
@@ -61,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
       iconType: "feather",
     },
     {
-      id: 4,
+      id: 3,
       title: "Racing",
       search: fetchRacingGames,
       filled: false,
@@ -69,7 +64,7 @@ const HomeScreen = ({ navigation }) => {
       iconType: "feather",
     },
     {
-      id: 5,
+      id: 4,
       title: "Strategy",
       search: fetchStrategyGames,
       filled: false,
@@ -128,6 +123,27 @@ const HomeScreen = ({ navigation }) => {
     />
   );
 
+  const renderTab = ({ item, index }) => (
+    <Tab.Item
+      // type={item.filled ? "solid" : "outline"}
+      title={item.title}
+      onPress={() => fetchGames(item.search)}
+      buttonStyle={{
+        // backgroundColor: COLORS.mediumGrey,
+        borderWidth: 2,
+        marginHorizontal: 5,
+      }}
+      // containerStyle={{ horizontalMargin: 10 }}
+      titleStyle={{ fontFamily: "Noah-Bold", color: COLORS.lightGrey }}
+      icon={{
+        name: item.iconName,
+        type: item.iconType,
+        size: 20,
+        color: COLORS.lightGrey,
+      }}
+    />
+  );
+
   useEffect(() => {
     fetchGames(fetchTrendingGames);
   }, []);
@@ -142,10 +158,14 @@ const HomeScreen = ({ navigation }) => {
       resizeMode="repeat"
       style={styles.background}
     >
-      <SafeAreaView style={styles.appContainer}>
+      <SafeAreaView
+        style={styles.appContainer}
+        edges={["right", "top", "left"]}
+      >
         <View style={styles.header}>
           <Text style={styles.h2}>ARCADE</Text>
         </View>
+
         <FlatList
           data={chips}
           extraData={chips}
@@ -160,13 +180,34 @@ const HomeScreen = ({ navigation }) => {
             height: 50,
           }}
         />
+
+        {/* <Tab value={tabIndex} onChange={setTabIndex}>
+          <Tab.Item title="trending" />
+          <Tab.Item
+            title="Must Play"
+            onPress={fetchGames(fetchMustPlayGames)}
+          />
+          <Tab.Item title="Indie" />
+          <Tab.Item title="Strategy" />
+        </Tab> */}
+
         <FlatList
+          key={1}
+          data={games}
+          extraData={games}
+          numColumns={2}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ alignItems: "center" }}
+        />
+
+        {/* <FlatList
           data={games}
           extraData={games}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={{ alignItems: "center" }}
-        />
+        /> */}
       </SafeAreaView>
     </ImageBackground>
   );
@@ -181,6 +222,7 @@ const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
     backgroundColor: "transparent",
+    // paddingBottom: -40,
     // justifyContent: "center",
     // alignItems: "center",
   },
