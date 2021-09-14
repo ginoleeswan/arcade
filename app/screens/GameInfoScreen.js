@@ -29,8 +29,6 @@ import { COLORS } from "../styles/colors";
 import IGDBrequests from "../api/IGDBrequests";
 import { Icon, Rating, AirbnbRating } from "react-native-elements";
 import { SharedElement } from "react-navigation-shared-element";
-import Gallery from "react-native-image-gallery";
-import Lightbox from "react-native-lightbox-v2";
 
 const regex = /(<([^>]+)>)/gi;
 
@@ -75,7 +73,6 @@ const GameInfoScreen = ({ route, navigation }) => {
   // let firstConsole = consoles[0];
 
   let screenshotURI = screenshots.results.map(({ image, id }) => {
-    // console.log(screenshot);
     // return (
     //   <Lightbox>
     //     <ImageElement
@@ -85,51 +82,116 @@ const GameInfoScreen = ({ route, navigation }) => {
     //   </Lightbox>
     // );
     return { uri: image, id: id };
-
-    // console.log(image);
   });
 
-  const consoles = game.platforms.map(({ platform }) => {
-    // platform.filter((console) => console.slug.startsWith("playstation")
-
+  const parentPlatforms = game.parent_platforms.map(({ platform }) => {
     if (platform.slug.startsWith("playstation")) {
-      // item.platform.slug.slice(0);
-      // consoleLogo = require(`../assets/icons/playstation3.png`);
       consoleLogoName = "logo-playstation";
       consoleLogoType = "ionicon";
-    } else if (platform.slug === "pc") {
-      // consoleLogo = require(`../assets/icons/pc.png`);
+    } else if (platform.slug.startsWith("pc")) {
       consoleLogoName = "microsoft-windows";
       consoleLogoType = "material-community";
-    } else if (platform.slug === "macos") {
-      // consoleLogo = require(`../assets/icons/pc.png`);
+    } else if (platform.slug.startsWith("mac")) {
       consoleLogoName = "logo-apple";
       consoleLogoType = "ionicon";
-    } else if (platform.slug === "linux") {
-      // consoleLogo = require(`../assets/icons/pc.png`);
+    } else if (platform.slug.startsWith("linux")) {
       consoleLogoName = "linux";
       consoleLogoType = "font-awesome";
-    } else if (platform.slug === "nintendo-switch") {
-      // consoleLogo = require(`../assets/icons/nintendo-switch.png`);
-      consoleLogoName = "nintendo-switch";
+    } else if (platform.slug.startsWith("android")) {
+      consoleLogoName = "android";
+      consoleLogoType = "font-awesome";
+    } else if (platform.slug.startsWith("ios")) {
+      consoleLogoName = "apple-ios";
       consoleLogoType = "material-community";
-    } else if (platform.slug === "xbox-one" || platform.slug === "xbox360") {
-      // consoleLogo = require(`../assets/icons/xbox-one.png`);
+    } else if (platform.slug.startsWith("web")) {
+      consoleLogoName = "web";
+      consoleLogoType = "material-community";
+    } else if (platform.slug.startsWith("xbox")) {
       consoleLogoName = "microsoft-xbox";
       consoleLogoType = "material-community";
     }
-    return (
-      <>
-        {/* <Text>{item.platform.name}</Text> */}
-
+    if (platform.slug.startsWith("nintendo")) {
+      return (
+        <Image
+          source={require("../assets/icons/nintendo.png")}
+          style={{ width: 35, height: 20, resizeMode: "contain" }}
+        />
+      );
+    } else if (platform.slug.startsWith("atari")) {
+      return (
+        <Image
+          source={require("../assets/icons/atari.png")}
+          style={{ width: 35, height: 20, resizeMode: "contain" }}
+        />
+      );
+    } else if (platform.slug.startsWith("sega")) {
+      return (
+        <Image
+          source={require("../assets/icons/sega.png")}
+          style={{ width: 35, height: 20, resizeMode: "contain" }}
+        />
+      );
+    } else if (platform.slug.startsWith("commodore-amiga")) {
+      return (
+        <Image
+          source={require("../assets/icons/commodore-amiga.png")}
+          style={{ width: 35, height: 20, resizeMode: "contain" }}
+        />
+      );
+    } else if (platform.slug.startsWith("neo-geo")) {
+      return (
+        <Image
+          source={require("../assets/icons/neo-geo.png")}
+          style={{ width: 35, height: 20, resizeMode: "contain" }}
+        />
+      );
+    } else if (platform.slug.startsWith("3do")) {
+      return (
+        <Image
+          source={require("../assets/icons/3do.png")}
+          style={{ width: 35, height: 20, resizeMode: "contain" }}
+        />
+      );
+    } else {
+      return (
         <Icon
           name={consoleLogoName}
           color={COLORS.lightGrey}
           type={consoleLogoType}
           style={{ padding: 5 }}
         />
+      );
+    }
+  });
 
-        {/* <Image source={consoleLogo} style={{ width: 20, height: 20 }} /> */}
+  const platforms = game.platforms.map(({ platform }) => {
+    return (
+      <>
+        <Text
+          style={{
+            ...styles.p,
+            textDecorationLine: "underline",
+          }}
+        >
+          {platform.name}
+        </Text>
+        <Text style={{ ...styles.p, marginRight: 5 }}>,</Text>
+      </>
+    );
+  });
+
+  const genres = game.genres.map(({ name }) => {
+    return (
+      <>
+        <Text
+          style={{
+            ...styles.p,
+            textDecorationLine: "underline",
+          }}
+        >
+          {name}
+        </Text>
+        <Text style={{ ...styles.p, marginRight: 5 }}>,</Text>
       </>
     );
   });
@@ -186,7 +248,7 @@ const GameInfoScreen = ({ route, navigation }) => {
     // });
     // getIGDBInfo();
     // console.table(game.ratings);
-    // console.log(screenshots);
+    console.log(game.parent_platforms);
   }, []);
 
   useEffect(() => {
@@ -222,15 +284,12 @@ const GameInfoScreen = ({ route, navigation }) => {
             top: 0,
             left: 0,
             width: "100%",
-            height: "100%",
+            height: Dimensions.get("window").height + 500,
             zIndex: -2,
+            paddingBottom: 50,
           }}
         >
-          <ScrollView
-            contentContainerStyle={{
-              flex: 1,
-            }}
-          >
+          <ScrollView>
             <View style={styles.gameBackgroundImageContainer}>
               <SharedElement id={game.id}>
                 <Image
@@ -274,7 +333,7 @@ const GameInfoScreen = ({ route, navigation }) => {
                   justifyContent: "center",
                 }}
               >
-                {consoles}
+                {parentPlatforms}
               </View>
               <Text
                 style={{ ...styles.h2, textAlign: "center", marginBottom: 20 }}
@@ -288,84 +347,104 @@ const GameInfoScreen = ({ route, navigation }) => {
                   reviewSize={12}
                   starContainerStyle={{ top: -10 }}
                   isDisabled
-                  defaultRating={Math.floor(game.rating)}
+                  defaultRating={game.rating_top}
                   // tintColor="transparent"
 
                   reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
                   showRating
                 />
               </View>
+            </Animated.View>
+
+            <Animated.View style={{ ...styles.infoContainer, opacity }}>
+              <View style={{ padding: 10 }}>
+                <Accordion
+                  sections={SECTIONS}
+                  activeSections={activeSections}
+                  underlayColor={COLORS.mediumGrey}
+                  renderHeader={(content, index, isActive, sections) => {
+                    return (
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      >
+                        <Text style={styles.h2}>{content.title}</Text>
+                        <Icon
+                          name={isActive ? "angle-up" : "angle-down"}
+                          color={COLORS.lightGrey}
+                          type="font-awesome-5"
+                          style={{ marginLeft: 10 }}
+                        />
+                      </View>
+                    );
+                  }}
+                  renderContent={(section) => {
+                    return (
+                      <Text style={{ ...styles.p }}>{section.content}</Text>
+                    );
+                  }}
+                  onChange={setActiveSections}
+                />
+              </View>
 
               <View
                 style={{
-                  justifyContent: "flex-start",
-
-                  top: 20,
+                  padding: 10,
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
                 }}
               >
-                <View style={styles.infoContainer}>
-                  <Accordion
-                    sections={SECTIONS}
-                    activeSections={activeSections}
-                    underlayColor={COLORS.mediumGrey}
-                    renderHeader={(content, index, isActive, sections) => {
-                      return (
-                        <View
-                          style={{ flexDirection: "row", alignItems: "center" }}
-                        >
-                          <Text style={styles.h2}>{content.title}</Text>
-                          <Icon
-                            name={isActive ? "angle-up" : "angle-down"}
-                            color={COLORS.lightGrey}
-                            type="font-awesome-5"
-                            style={{ marginLeft: 10 }}
-                          />
-                        </View>
-                      );
+                <View>
+                  <Text style={styles.h2}>Platforms</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      flexWrap: "wrap",
                     }}
-                    renderContent={(section) => {
-                      return (
-                        <Text style={{ ...styles.p }}>{section.content}</Text>
-                      );
-                    }}
-                    onChange={setActiveSections}
-                  />
+                  >
+                    {platforms}
+                  </View>
                 </View>
-                <View style={styles.screenshotsContainer}>
-                  <Text style={styles.h2}>Screenshots</Text>
 
-                  <FlatList
-                    horizontal
-                    data={screenshotURI}
-                    renderItem={({ item }) => (
-                      <ImageElement
-                        source={{ uri: item.uri }}
-                        style={{
-                          width: 300,
-                          height: 200,
-                          marginRight: 15,
-                          borderRadius: 10,
-                        }}
-                        PlaceholderContent={
-                          <ActivityIndicator
-                            color={COLORS.darkGrey}
-                            size="large"
-                          />
-                        }
-                      />
-                    )}
-                    keyExtractor={(item) => item.id.toString()}
-                    contentContainerStyle={{
-                      top: 10,
-                      height: 210,
-                      // width: "100%",
-                      // borderColor: "white",
-                      // borderWidth: 2,
-                      alignItems: "center",
-                    }}
-                  />
+                <View>
+                  <Text style={styles.h2}>Genre</Text>
+                  <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                    {genres}
+                  </View>
                 </View>
               </View>
+
+              <View style={{ padding: 10, paddingBottom: 0 }}>
+                <Text style={styles.h2}>Screenshots</Text>
+              </View>
+              <FlatList
+                horizontal
+                data={screenshotURI}
+                renderItem={({ item }) => (
+                  <ImageElement
+                    source={{ uri: item.uri }}
+                    style={{
+                      width: 300,
+                      height: 200,
+                      marginRight: 15,
+                      borderRadius: 10,
+                    }}
+                    PlaceholderContent={
+                      <ActivityIndicator color={COLORS.darkGrey} size="large" />
+                    }
+                  />
+                )}
+                keyExtractor={(item) => item.id.toString()}
+                contentContainerStyle={{
+                  height: 220,
+                  // width: "100%",
+                  // borderColor: "white",
+                  // borderWidth: 2,
+                  paddingLeft: 8,
+                  alignItems: "center",
+                }}
+              />
             </Animated.View>
           </ScrollView>
         </View>
@@ -376,15 +455,15 @@ const GameInfoScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   background: {
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width,
-    overflow: "hidden",
+    // height: Dimensions.get("window").height,
+    // width: Dimensions.get("window").width,
+    // overflow: "hidden",
     backgroundColor: COLORS.darkGrey,
     flex: 1,
   },
   appContainer: {
     flex: 1,
-    backgroundColor: "transparent",
+    // backgroundColor: "transparent",
     // justifyContent: "center",
     // alignItems: "center",
   },
@@ -418,14 +497,14 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    zIndex: -1,
+    // zIndex: -1,
   },
   gameLogoContainer: {
     alignItems: "center",
     justifyContent: "center",
     top: -250,
     left: 0,
-    zIndex: 4,
+    // zIndex: 4,
   },
   gameMainInfoContainer: {
     width: "100%",
@@ -435,19 +514,20 @@ const styles = StyleSheet.create({
     padding: 10,
     top: 150,
     left: 0,
-    zIndex: 0,
+    // zIndex: 0,
   },
   infoContainer: {
-    width: "100%",
-    // height: "100%",
-    marginVertical: 15,
-    zIndex: 0,
+    marginVertical: 8,
+    justifyContent: "space-between",
+
+    top: 350,
+    // zIndex: 0,
   },
   screenshotsContainer: {
     width: "100%",
     // height: "100%",
     // marginVertical: 15,
-    zIndex: 0,
+    // zIndex: 0,
   },
   imageOverlay: {
     position: "absolute",
@@ -459,7 +539,7 @@ const styles = StyleSheet.create({
     borderRadius: 40,
 
     opacity: 0.4,
-    zIndex: 3,
+    // zIndex: 3,
   },
 });
 
