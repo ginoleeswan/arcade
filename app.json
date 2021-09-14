@@ -28,6 +28,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": "a game search engine"
+    "description": "A Video Game database search engine",
+    "githubUrl": "https://github.com/ginoleeswan/arcade"
   }
 }
