@@ -389,13 +389,17 @@ const GameInfoScreen = ({ route, navigation }) => {
               <View
                 style={{
                   padding: 10,
-                  flexDirection: "row",
+                  // flexDirection: "row",
                   justifyContent: "space-between",
-                  alignItems: "center",
-                  flexWrap: "wrap",
+                  alignItems: "flex-start",
+                  // flexWrap: "wrap",
                 }}
               >
-                <View>
+                <View
+                  style={{
+                    paddingBottom: 20,
+                  }}
+                >
                   <Text style={styles.h2}>Platforms</Text>
                   <View
                     style={{
