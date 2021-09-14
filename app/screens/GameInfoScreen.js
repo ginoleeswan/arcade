@@ -493,7 +493,9 @@ const styles = StyleSheet.create({
   gameBackgroundImage: {
     width: "100%",
     height: 350,
-    borderRadius: 40,
+    // borderRadius: 40,
+    borderBottomStartRadius: 40,
+    borderBottomEndRadius: 40,
   },
   gameBackgroundImageContainer: {
     width: "100%",
@@ -540,7 +542,9 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 350,
     backgroundColor: "black",
-    borderRadius: 40,
+    // borderRadius: 40,
+    borderBottomStartRadius: 40,
+    borderBottomEndRadius: 40,
 
     opacity: 0.4,
     // zIndex: 3,
