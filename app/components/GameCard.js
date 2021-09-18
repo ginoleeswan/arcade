@@ -34,12 +34,27 @@ export const GameCard = ({ game, navigation, key }) => {
       const requestScreenshots = await axios.get(
         `${getGameByID}${game.id}/screenshots/?key=${API_KEY}`
       );
+      const requestTrailers = await axios.get(
+        `${getGameByID}${game.id}/movies/?key=${API_KEY}`
+      );
+      const requestStores = await axios.get(
+        `${getGameByID}${game.id}/stores/?key=${API_KEY}`
+      );
+      const requestGameSeries = await axios.get(
+        `${getGameByID}${game.id}/game-series/?key=${API_KEY}`
+      );
       const gameData = request.data;
       const gameScreenShots = requestScreenshots.data;
+      const gameTrailers = requestTrailers.data;
+      const gameStores = requestStores.data;
+      const gameSeries = requestGameSeries.data;
       // console.log(gameScreenShots);
       navigation.push("Game Info", {
         game: gameData,
         screenshots: gameScreenShots,
+        trailers: gameTrailers,
+        stores: gameStores,
+        series: gameSeries,
         key: key,
       });
     } catch (error) {
@@ -100,8 +115,14 @@ export const GameCard = ({ game, navigation, key }) => {
               <View
                 style={{
                   position: "absolute",
-                  bottom: 30,
+                  bottom: 0,
                   left: 0,
+                  paddingHorizontal: 5,
+                  paddingVertical: 15,
+                  paddingBottom: 20,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  // backgroundColor: "red",
                   width: "100%",
                 }}
               >

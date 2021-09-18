@@ -16,7 +16,6 @@ import {
 // import { Image } from "react-native-elements";
 import axios from "../api/IGDB";
 import IDGBrequests from "../api/IGDBrequests";
-import { printTable } from "console-table-printer";
 import cTable from "console.table";
 import { table } from "table";
 import Accordion from "react-native-collapsible/Accordion";
@@ -30,11 +29,13 @@ import IGDBrequests from "../api/IGDBrequests";
 import { Icon, Rating, AirbnbRating } from "react-native-elements";
 import { SharedElement } from "react-navigation-shared-element";
 import Lightbox from "react-native-lightbox-v2";
+import { Video, AVPlaybackStatus } from "expo-av";
+import { GameCard } from "../components/GameCard";
 
 const regex = /(<([^>]+)>)/gi;
 
 const GameInfoScreen = ({ route, navigation }) => {
-  const { game, key, screenshots } = route.params;
+  const { game, key, screenshots, trailers, stores, series } = route.params;
 
   const [visible, setIsVisible] = useState(false);
 
@@ -65,14 +66,6 @@ const GameInfoScreen = ({ route, navigation }) => {
     },
   ];
 
-  // let consoles = game.platforms.filter(
-  //   (item) =>
-  //     item.platform.slug.startsWith("play") ||
-  //     item.platform.slug.startsWith("xbox")
-  // );
-
-  // let firstConsole = consoles[0];
-
   let screenshotURI = screenshots.results.map(({ image, id }) => {
     // return (
     //   <Lightbox>
@@ -83,6 +76,14 @@ const GameInfoScreen = ({ route, navigation }) => {
     //   </Lightbox>
     // );
     return { uri: image, id: id };
+  });
+
+  let gameTrailers = trailers.results.map(({ name, preview, data, id }) => {
+    return { thumbnailURI: preview, id: id, name: name, videoURI: data };
+  });
+
+  let gameSeries = series.results.map(({ name, background_image, id }) => {
+    return { background_image: background_image, id: id, name: name };
   });
 
   const parentPlatforms = game.parent_platforms.map(({ platform }) => {
@@ -171,6 +172,7 @@ const GameInfoScreen = ({ route, navigation }) => {
         <Text
           style={{
             ...styles.p,
+            lineHeight: 18,
             textDecorationLine: "underline",
           }}
         >
@@ -196,6 +198,58 @@ const GameInfoScreen = ({ route, navigation }) => {
       </>
     );
   });
+
+  const developers = game.developers.map(({ name }) => {
+    return (
+      <>
+        <Text
+          style={{
+            ...styles.p,
+            textDecorationLine: "underline",
+          }}
+        >
+          {name}
+        </Text>
+        <Text style={{ ...styles.p, marginRight: 5 }}>,</Text>
+      </>
+    );
+  });
+
+  const publishers = game.publishers.map(({ name }) => {
+    return (
+      <>
+        <Text
+          style={{
+            ...styles.p,
+            textDecorationLine: "underline",
+          }}
+        >
+          {name}
+        </Text>
+        <Text style={{ ...styles.p, marginRight: 5 }}>,</Text>
+      </>
+    );
+  });
+
+  const tags = game.tags.map(({ name }) => {
+    return (
+      <>
+        <Text
+          style={{
+            ...styles.p,
+            textDecorationLine: "underline",
+          }}
+        >
+          {name}
+        </Text>
+        <Text style={{ ...styles.p, marginRight: 5 }}>,</Text>
+      </>
+    );
+  });
+
+  const renderGameCard = ({ item, index }) => (
+    <GameCard key={item.id} game={item} navigation={navigation} />
+  );
 
   const getIGDBInfo = () => {
     axios({
@@ -249,7 +303,7 @@ const GameInfoScreen = ({ route, navigation }) => {
     // });
     // getIGDBInfo();
     // console.table(game.ratings);
-    // console.log(game.parent_platforms);
+    // console.log(game.id);
   }, []);
 
   useEffect(() => {
@@ -345,7 +399,7 @@ const GameInfoScreen = ({ route, navigation }) => {
           </Animated.View>
         </View>
 
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 10 }}>
           <Animated.View style={{ ...styles.infoContainer, opacity }}>
             <View style={{ padding: 10 }}>
               <Accordion
@@ -377,29 +431,84 @@ const GameInfoScreen = ({ route, navigation }) => {
             <View
               style={{
                 padding: 10,
-                // flexDirection: "row",
+                flexDirection: "row",
                 justifyContent: "space-between",
                 alignItems: "flex-start",
-                // flexWrap: "wrap",
+                flexWrap: "wrap",
               }}
             >
-              <View style={{ paddingBottom: 20 }}>
+              <View style={{ width: "60%" }}>
                 <Text style={styles.h2}>Platforms</Text>
                 <View
                   style={{
                     flexDirection: "row",
                     flexWrap: "wrap",
+                    paddingRight: 10,
                   }}
                 >
                   {platforms}
                 </View>
               </View>
 
-              <View>
+              <View style={{ width: "40%" }}>
                 <Text style={styles.h2}>Genre</Text>
-                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    paddingRight: 10,
+                  }}
+                >
                   {genres}
                 </View>
+              </View>
+            </View>
+
+            <View
+              style={{
+                padding: 10,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                flexWrap: "wrap",
+              }}
+            >
+              <View style={{ width: "60%" }}>
+                <Text style={styles.h2}>Developers</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    paddingRight: 10,
+                  }}
+                >
+                  {developers}
+                </View>
+              </View>
+
+              <View style={{ width: "40%" }}>
+                <Text style={styles.h2}>Publishers</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    paddingRight: 10,
+                  }}
+                >
+                  {publishers}
+                </View>
+              </View>
+            </View>
+
+            <View style={{ padding: 10, paddingBottom: 20 }}>
+              <Text style={styles.h2}>Tags</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                }}
+              >
+                {tags}
               </View>
             </View>
 
@@ -435,6 +544,124 @@ const GameInfoScreen = ({ route, navigation }) => {
                 alignItems: "center",
               }}
             />
+
+            <View style={{ padding: 10, paddingBottom: 10 }}>
+              <Text style={styles.h2}>Trailers</Text>
+            </View>
+            {gameTrailers.length != 0 ? (
+              <FlatList
+                horizontal
+                data={gameTrailers}
+                renderItem={({ item }) => (
+                  <View style={{ width: 320 }}>
+                    <Text
+                      style={{
+                        ...styles.p,
+                        flexWrap: "wrap",
+                        paddingBottom: 8,
+                      }}
+                    >
+                      {item.name}
+                    </Text>
+                    <Video
+                      source={{ uri: item.videoURI.max }}
+                      posterSource={{ uri: item.thumbnailURI }}
+                      usePoster
+                      style={{
+                        width: 300,
+                        height: 200,
+                        marginRight: 15,
+                        borderRadius: 10,
+                      }}
+                      useNativeControls
+                      resizeMode="contain"
+                      // PlaceholderContent={
+                      //   <ActivityIndicator color={COLORS.darkGrey} size="large" />
+                      // }
+                    />
+                  </View>
+                )}
+                keyExtractor={(item) => item.id.toString()}
+                contentContainerStyle={{
+                  height: 220,
+                  // width: "100%",
+                  // borderColor: "white",
+                  // borderWidth: 2,
+                  paddingLeft: 8,
+                  alignItems: "center",
+                }}
+              />
+            ) : (
+              <View style={{ paddingHorizontal: 15 }}>
+                <Text style={styles.p}>No Trailers</Text>
+              </View>
+            )}
+
+            <View style={{ padding: 10, paddingBottom: 10 }}>
+              <Text style={styles.h2}>Games in Series</Text>
+            </View>
+            <FlatList
+              horizontal
+              data={gameSeries}
+              renderItem={
+                renderGameCard
+                // ({ item }) => (
+                // <>
+                //   <Lightbox>
+                //     <ImageElement
+                //       source={{ uri: item.background_image }}
+                //       style={{
+                //         width: 200,
+                //         height: 200,
+                //         marginRight: 15,
+                //         borderRadius: 20,
+                //       }}
+                //       PlaceholderContent={
+                //         <ActivityIndicator
+                //           color={COLORS.darkGrey}
+                //           size="large"
+                //         />
+                //       }
+                //     />
+                //   </Lightbox>
+                //   <View
+                //     style={{
+                //       position: "absolute",
+                //       left: 0,
+                //       bottom: 0,
+                //       padding: 12,
+                //       width: 200,
+                //       backgroundColor: "rgba(0,0,0,0.5)",
+                //       alignItems: "center",
+                //       borderBottomEndRadius: 20,
+                //       borderBottomStartRadius: 20,
+                //     }}
+                //   >
+                //     <Text
+                //       style={{
+                //         ...styles.h3,
+                //         fontSize: 13,
+                //         textAlign: "center",
+                //         textShadowColor: "rgba(0, 0, 0, 1)",
+                //         textShadowOffset: { width: -1, height: 1 },
+                //         textShadowRadius: 5,
+                //       }}
+                //     >
+                //       {item.name}
+                //     </Text>
+                //   </View>
+                // </>
+              }
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={{
+                height: 220,
+                // width: "100%",
+                // borderColor: "white",
+                // borderWidth: 2,
+                paddingLeft: 8,
+                alignItems: "center",
+              }}
+            />
           </Animated.View>
         </ScrollView>
         {/* </View> */}
@@ -453,14 +680,18 @@ const styles = StyleSheet.create({
   },
   appContainer: {
     flex: 1,
-
-    // backgroundColor: "transparent",
+    // backgroundColor: "red",
     // justifyContent: "center",
     // alignItems: "center",
   },
   h2: {
     fontFamily: "Noah-Black",
     fontSize: 25,
+    color: COLORS.lightGrey,
+  },
+  h3: {
+    fontFamily: "Noah-Bold",
+    fontSize: 18,
     color: COLORS.lightGrey,
   },
   p: {
@@ -491,6 +722,18 @@ const styles = StyleSheet.create({
     // top: 0,
     // left: 0,
     // zIndex: -1,
+    // backgroundColor: "red",
+    borderBottomStartRadius: 40,
+    borderBottomEndRadius: 40,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
   },
   gameLogoContainer: {
     alignItems: "center",
@@ -507,6 +750,7 @@ const styles = StyleSheet.create({
     padding: 10,
     top: 150,
     left: 0,
+
     // zIndex: 0,
   },
   infoContainer: {
