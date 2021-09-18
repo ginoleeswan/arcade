@@ -29,6 +29,7 @@ import { COLORS } from "../styles/colors";
 import IGDBrequests from "../api/IGDBrequests";
 import { Icon, Rating, AirbnbRating } from "react-native-elements";
 import { SharedElement } from "react-navigation-shared-element";
+import Lightbox from "react-native-lightbox-v2";
 
 const regex = /(<([^>]+)>)/gi;
 
@@ -51,10 +52,10 @@ const GameInfoScreen = ({ route, navigation }) => {
   let consoleLogoType = null;
 
   const activeLightboxProps = {
-    resizeMode: "contain",
-    marginHorizontal: 20,
-    flex: 1,
-    width: null,
+    // resizeMode: "contain",
+    // marginHorizontal: 20,
+    // flex: 1,
+    // width: null,
   };
 
   const SECTIONS = [
@@ -248,7 +249,7 @@ const GameInfoScreen = ({ route, navigation }) => {
     // });
     // getIGDBInfo();
     // console.table(game.ratings);
-    console.log(game.parent_platforms);
+    // console.log(game.parent_platforms);
   }, []);
 
   useEffect(() => {
@@ -267,165 +268,149 @@ const GameInfoScreen = ({ route, navigation }) => {
       resizeMode="repeat"
       style={styles.background}
     >
-      <SafeAreaView
-        edges={["right", "top", "left"]}
-        style={styles.appContainer}
-      >
+      <SafeAreaView edges={["right", "left"]} style={styles.appContainer}>
         <StatusBar
           translucent
           backgroundColor="transparent"
           barStyle="light-content"
         />
-        <Header title={""} backbutton={true} navigation={navigation} />
-        <View
-          style={{
-            flex: 1,
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: Dimensions.get("window").height + 500,
-            zIndex: -2,
-            paddingBottom: 50,
-          }}
-        >
-          <ScrollView>
-            <View style={styles.gameBackgroundImageContainer}>
-              <SharedElement id={game.id}>
+
+        <View style={styles.gameBackgroundImageContainer}>
+          <View style={{ position: "absolute", top: 50, left: 0, zIndex: 200 }}>
+            <Header title={""} backbutton={true} navigation={navigation} />
+          </View>
+          <SharedElement id={game.id}>
+            <Image
+              source={{ uri: game.background_image }}
+              style={styles.gameBackgroundImage}
+              // PlaceholderContent={<ActivityIndicator />}
+            />
+          </SharedElement>
+          <View style={styles.imageOverlay}></View>
+          {/* <View style={styles.gameLogoContainer}>
                 <Image
-                  source={{ uri: game.background_image }}
-                  style={styles.gameBackgroundImage}
-                  // PlaceholderContent={<ActivityIndicator />}
-                />
-              </SharedElement>
-              <View style={styles.imageOverlay}></View>
-              {/* <View style={styles.gameLogoContainer}>
-                <Image
-                  source={require("../assets/icons/grand-theft-auto-v.png")}
-                  style={{ width: 400, height: 200, resizeMode: "cover" }}
+                source={require("../assets/icons/grand-theft-auto-v.png")}
+                style={{ width: 400, height: 200, resizeMode: "cover" }}
                 />
               </View> */}
-            </View>
-            <Animated.View style={{ ...styles.gameMainInfoContainer, opacity }}>
-              <View
-                style={{
-                  width: 80,
-                  backgroundColor: COLORS.lightGrey,
-                  alignItems: "center",
-                  marginBottom: 5,
-                  borderRadius: 5,
-                }}
-              >
-                <Text
-                  style={{
-                    ...styles.p,
-                    textTransform: "uppercase",
-                    color: COLORS.darkGrey,
-                  }}
-                >
-                  {dateFormat(game.released, "mmm d, yyyy")}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {parentPlatforms}
-              </View>
+
+          <Animated.View style={{ ...styles.gameMainInfoContainer, opacity }}>
+            <View
+              style={{
+                width: 80,
+                backgroundColor: COLORS.lightGrey,
+                alignItems: "center",
+                marginBottom: 5,
+                borderRadius: 5,
+              }}
+            >
               <Text
-                style={{ ...styles.h2, textAlign: "center", marginBottom: 20 }}
-              >
-                {game.name}
-              </Text>
-              <View style={{ top: -30 }}>
-                <AirbnbRating
-                  count={5}
-                  size={20}
-                  reviewSize={12}
-                  starContainerStyle={{ top: -10 }}
-                  isDisabled
-                  defaultRating={game.rating_top}
-                  // tintColor="transparent"
-
-                  reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
-                  showRating
-                />
-              </View>
-            </Animated.View>
-
-            <Animated.View style={{ ...styles.infoContainer, opacity }}>
-              <View style={{ padding: 10 }}>
-                <Accordion
-                  sections={SECTIONS}
-                  activeSections={activeSections}
-                  underlayColor={COLORS.mediumGrey}
-                  renderHeader={(content, index, isActive, sections) => {
-                    return (
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      >
-                        <Text style={styles.h2}>{content.title}</Text>
-                        <Icon
-                          name={isActive ? "angle-up" : "angle-down"}
-                          color={COLORS.lightGrey}
-                          type="font-awesome-5"
-                          style={{ marginLeft: 10 }}
-                        />
-                      </View>
-                    );
-                  }}
-                  renderContent={(section) => {
-                    return (
-                      <Text style={{ ...styles.p }}>{section.content}</Text>
-                    );
-                  }}
-                  onChange={setActiveSections}
-                />
-              </View>
-
-              <View
                 style={{
-                  padding: 10,
-                  // flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                  // flexWrap: "wrap",
+                  ...styles.p,
+                  textTransform: "uppercase",
+                  color: COLORS.darkGrey,
                 }}
               >
+                {dateFormat(game.released, "mmm d, yyyy")}
+              </Text>
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              {parentPlatforms}
+            </View>
+            <Text
+              style={{ ...styles.h2, textAlign: "center", marginBottom: 20 }}
+            >
+              {game.name}
+            </Text>
+            <View style={{ top: -30 }}>
+              <AirbnbRating
+                count={5}
+                size={20}
+                reviewSize={12}
+                starContainerStyle={{ top: -10 }}
+                isDisabled
+                defaultRating={game.rating_top}
+                // tintColor="transparent"
+
+                reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
+                showRating
+              />
+            </View>
+          </Animated.View>
+        </View>
+
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <Animated.View style={{ ...styles.infoContainer, opacity }}>
+            <View style={{ padding: 10 }}>
+              <Accordion
+                sections={SECTIONS}
+                activeSections={activeSections}
+                underlayColor={COLORS.mediumGrey}
+                renderHeader={(content, index, isActive, sections) => {
+                  return (
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <Text style={styles.h2}>{content.title}</Text>
+                      <Icon
+                        name={isActive ? "angle-up" : "angle-down"}
+                        color={COLORS.lightGrey}
+                        type="font-awesome-5"
+                        style={{ marginLeft: 10 }}
+                      />
+                    </View>
+                  );
+                }}
+                renderContent={(section) => {
+                  return <Text style={{ ...styles.p }}>{section.content}</Text>;
+                }}
+                onChange={setActiveSections}
+              />
+            </View>
+
+            <View
+              style={{
+                padding: 10,
+                // flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                // flexWrap: "wrap",
+              }}
+            >
+              <View style={{ paddingBottom: 20 }}>
+                <Text style={styles.h2}>Platforms</Text>
                 <View
                   style={{
-                    paddingBottom: 20,
+                    flexDirection: "row",
+                    flexWrap: "wrap",
                   }}
                 >
-                  <Text style={styles.h2}>Platforms</Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    {platforms}
-                  </View>
-                </View>
-
-                <View>
-                  <Text style={styles.h2}>Genre</Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-                    {genres}
-                  </View>
+                  {platforms}
                 </View>
               </View>
 
-              <View style={{ padding: 10, paddingBottom: 0 }}>
-                <Text style={styles.h2}>Screenshots</Text>
+              <View>
+                <Text style={styles.h2}>Genre</Text>
+                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                  {genres}
+                </View>
               </View>
-              <FlatList
-                horizontal
-                data={screenshotURI}
-                renderItem={({ item }) => (
+            </View>
+
+            <View style={{ padding: 10, paddingBottom: 0 }}>
+              <Text style={styles.h2}>Screenshots</Text>
+            </View>
+            <FlatList
+              horizontal
+              data={screenshotURI}
+              renderItem={({ item }) => (
+                <Lightbox activeProps={activeLightboxProps}>
                   <ImageElement
                     source={{ uri: item.uri }}
                     style={{
@@ -438,20 +423,21 @@ const GameInfoScreen = ({ route, navigation }) => {
                       <ActivityIndicator color={COLORS.darkGrey} size="large" />
                     }
                   />
-                )}
-                keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={{
-                  height: 220,
-                  // width: "100%",
-                  // borderColor: "white",
-                  // borderWidth: 2,
-                  paddingLeft: 8,
-                  alignItems: "center",
-                }}
-              />
-            </Animated.View>
-          </ScrollView>
-        </View>
+                </Lightbox>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={{
+                height: 220,
+                // width: "100%",
+                // borderColor: "white",
+                // borderWidth: 2,
+                paddingLeft: 8,
+                alignItems: "center",
+              }}
+            />
+          </Animated.View>
+        </ScrollView>
+        {/* </View> */}
       </SafeAreaView>
     </ImageBackground>
   );
@@ -467,6 +453,7 @@ const styles = StyleSheet.create({
   },
   appContainer: {
     flex: 1,
+
     // backgroundColor: "transparent",
     // justifyContent: "center",
     // alignItems: "center",
@@ -498,11 +485,11 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 40,
   },
   gameBackgroundImageContainer: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
-    top: 0,
-    left: 0,
+    // width: "100%",
+    // height: "100%",
+    // position: "absolute",
+    // top: 0,
+    // left: 0,
     // zIndex: -1,
   },
   gameLogoContainer: {
@@ -526,7 +513,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     justifyContent: "space-between",
 
-    top: 350,
+    // top: 350,
     // zIndex: 0,
   },
   screenshotsContainer: {
