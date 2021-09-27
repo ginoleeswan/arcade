@@ -20,7 +20,7 @@ import cTable from "console.table";
 import { table } from "table";
 import Accordion from "react-native-collapsible/Accordion";
 import dateFormat from "dateformat";
-import { Image as ImageElement } from "react-native-elements";
+import { Image as ImageElement, Chip } from "react-native-elements";
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/Header";
@@ -234,7 +234,7 @@ const GameInfoScreen = ({ route, navigation }) => {
   const tags = game.tags.map(({ name }) => {
     return (
       <>
-        <Text
+        {/* <Text
           style={{
             ...styles.p,
             textDecorationLine: "underline",
@@ -242,7 +242,20 @@ const GameInfoScreen = ({ route, navigation }) => {
         >
           {name}
         </Text>
-        <Text style={{ ...styles.p, marginRight: 5 }}>,</Text>
+        <Text style={{ ...styles.p, marginRight: 5 }}>,</Text> */}
+
+        <Chip
+          type={"solid"}
+          title={name}
+          buttonStyle={{
+            backgroundColor: COLORS.plum,
+            marginRight: 5,
+            marginVertical: 4,
+            padding: 2,
+            paddingHorizontal: 5,
+          }}
+          titleStyle={{ ...styles.p }}
+        />
       </>
     );
   });
@@ -443,7 +456,7 @@ const GameInfoScreen = ({ route, navigation }) => {
                   style={{
                     flexDirection: "row",
                     flexWrap: "wrap",
-                    paddingRight: 10,
+                    paddingRight: 30,
                   }}
                 >
                   {platforms}
@@ -497,18 +510,6 @@ const GameInfoScreen = ({ route, navigation }) => {
                 >
                   {publishers}
                 </View>
-              </View>
-            </View>
-
-            <View style={{ padding: 10, paddingBottom: 20 }}>
-              <Text style={styles.h2}>Tags</Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                }}
-              >
-                {tags}
               </View>
             </View>
 
@@ -567,7 +568,7 @@ const GameInfoScreen = ({ route, navigation }) => {
                       <Video
                         source={{ uri: item.videoURI.max }}
                         posterSource={{ uri: item.thumbnailURI }}
-                        usePoster
+                        // usePoster
                         style={{
                           width: 300,
                           height: 200,
@@ -613,6 +614,19 @@ const GameInfoScreen = ({ route, navigation }) => {
                 />
               </>
             ) : null}
+
+            <View style={{ padding: 10, paddingBottom: 20 }}>
+              <Text style={styles.h2}>Tags</Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  marginTop: 5,
+                }}
+              >
+                {tags}
+              </View>
+            </View>
           </Animated.View>
         </ScrollView>
         {/* </View> */}
