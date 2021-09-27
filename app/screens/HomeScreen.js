@@ -16,11 +16,13 @@ import { GameCard } from "../components/GameCard";
 import { Chip, TabView } from "react-native-elements";
 
 import { Tab } from "react-native-elements";
+import { Modal } from "react-native";
+import { ActivityIndicator } from "react-native";
 
 const HomeScreen = ({ navigation }) => {
   const [games, setGames] = useContext(GamesContext);
-  const [tabIndex, setTabIndex] = useState(0);
   const [selectedChip, setSelectedChip] = useState(0);
+  const [loading, setLoading] = useState(false);
   const [indexToAnimate, setIndexToAnimate] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const {
@@ -132,6 +134,7 @@ const HomeScreen = ({ navigation }) => {
     setGames(null);
     setSelectedChip(chipID);
     try {
+      setLoading(true);
       const request = await axios.get(type);
 
       if (type == fetchMustPlayGames) {
@@ -145,12 +148,15 @@ const HomeScreen = ({ navigation }) => {
           };
         });
         setGames(items);
+        setLoading(false);
       } else {
         setGames(request.data.results);
+        setLoading(false);
       }
       // console.log(games);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -220,23 +226,23 @@ const HomeScreen = ({ navigation }) => {
         edges={["right", "top", "left"]}
       >
         <View style={styles.header}>
-          <Text style={styles.h2}>ARCADE</Text>
-        </View>
+          <Text style={{ ...styles.h2, paddingHorizontal: 15 }}>ARCADE</Text>
 
-        <FlatList
-          data={chips}
-          extraData={chips}
-          horizontal={true}
-          renderItem={renderChip}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{
-            // width: "100%",
-            alignItems: "center",
-            justifyContent: "space-evenly",
-            marginBottom: 30,
-            height: 50,
-          }}
-        />
+          <FlatList
+            data={chips}
+            extraData={chips}
+            horizontal={true}
+            renderItem={renderChip}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{
+              // width: "100%",
+              alignItems: "center",
+              justifyContent: "space-evenly",
+              // marginBottom: 30,
+              height: 50,
+            }}
+          />
+        </View>
 
         {/* <Tab value={tabIndex} onChange={setTabIndex}>
           <Tab.Item title="trending" />
@@ -248,15 +254,40 @@ const HomeScreen = ({ navigation }) => {
           <Tab.Item title="Strategy" />
         </Tab> */}
 
-        <FlatList
-          key={1}
-          data={games}
-          extraData={games}
-          numColumns={2}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={{ alignItems: "center" }}
-        />
+        {loading === true ? (
+          // <Modal statusBarTranslucent={true}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <View style={{ top: -40 }}>
+              <ActivityIndicator size="large" />
+              <Text
+                style={{
+                  ...styles.p,
+                  top: 5,
+                  left: 2,
+                }}
+              >
+                Loading {chips[selectedChip].title} Games...
+              </Text>
+            </View>
+          </View>
+        ) : (
+          // </Modal>
+          <FlatList
+            key={1}
+            data={games}
+            extraData={games}
+            numColumns={2}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ alignItems: "center" }}
+          />
+        )}
 
         {/* <FlatList
           data={games}
@@ -300,7 +331,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   header: {
-    paddingHorizontal: 15,
+    // paddingHorizontal: 15,
     marginBottom: 10,
   },
 });
