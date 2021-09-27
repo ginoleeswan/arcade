@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Animated,
   ImageBackground,
@@ -24,10 +24,13 @@ import { SharedElement } from "react-navigation-shared-element";
 const API_KEY = "a5dc51990cf541aba0f759e85e41a324";
 
 export const GameCard = ({ game, navigation, key }) => {
+  const [loading, setLoading] = useState(false);
+
   const { getGameByID } = requests;
 
   const searchGame = async () => {
     try {
+      setLoading(true);
       const request = await axios.get(
         `${getGameByID}${game.id}?key=${API_KEY}`
       );
@@ -57,8 +60,10 @@ export const GameCard = ({ game, navigation, key }) => {
         series: gameSeries,
         key: key,
       });
+      setLoading(false);
     } catch (error) {
       console.error(error);
+      setLoading(false);
     }
   };
 
@@ -107,6 +112,7 @@ export const GameCard = ({ game, navigation, key }) => {
               style={styles.cardImage}
               PlaceholderContent={<ActivityIndicator />}
             />
+
             <ImageBackground
               source={require("../assets/images/noise.png")}
               resizeMode="repeat"
@@ -139,6 +145,19 @@ export const GameCard = ({ game, navigation, key }) => {
                   {game.name}
                 </Text>
               </View>
+              {loading === true ? (
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "white",
+                    opacity: 0.4,
+                  }}
+                >
+                  <ActivityIndicator size="large" color={COLORS.darkGrey} />
+                </View>
+              ) : null}
             </ImageBackground>
             {/* </LinearGradient> */}
           </InsetShadow>
