@@ -545,123 +545,74 @@ const GameInfoScreen = ({ route, navigation }) => {
               }}
             />
 
-            <View style={{ padding: 10, paddingBottom: 10 }}>
-              <Text style={styles.h2}>Trailers</Text>
-            </View>
             {gameTrailers.length != 0 ? (
-              <FlatList
-                horizontal
-                data={gameTrailers}
-                renderItem={({ item }) => (
-                  <View style={{ width: 320 }}>
-                    <Text
-                      style={{
-                        ...styles.p,
-                        flexWrap: "wrap",
-                        paddingBottom: 8,
-                      }}
-                    >
-                      {item.name}
-                    </Text>
-                    <Video
-                      source={{ uri: item.videoURI.max }}
-                      posterSource={{ uri: item.thumbnailURI }}
-                      usePoster
-                      style={{
-                        width: 300,
-                        height: 200,
-                        marginRight: 15,
-                        borderRadius: 10,
-                      }}
-                      useNativeControls
-                      resizeMode="contain"
-                      // PlaceholderContent={
-                      //   <ActivityIndicator color={COLORS.darkGrey} size="large" />
-                      // }
-                    />
-                  </View>
-                )}
-                keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={{
-                  height: 220,
-                  // width: "100%",
-                  // borderColor: "white",
-                  // borderWidth: 2,
-                  paddingLeft: 8,
-                  alignItems: "center",
-                }}
-              />
-            ) : (
-              <View style={{ paddingHorizontal: 15 }}>
-                <Text style={styles.p}>No Trailers</Text>
-              </View>
-            )}
+              <>
+                <View style={{ padding: 10, paddingBottom: 10 }}>
+                  <Text style={styles.h2}>Trailers</Text>
+                </View>
+                <FlatList
+                  horizontal
+                  data={gameTrailers}
+                  renderItem={({ item }) => (
+                    <View style={{ width: 320 }}>
+                      <Text
+                        style={{
+                          ...styles.p,
+                          flexWrap: "wrap",
+                          paddingBottom: 8,
+                        }}
+                      >
+                        {item.name}
+                      </Text>
+                      <Video
+                        source={{ uri: item.videoURI.max }}
+                        posterSource={{ uri: item.thumbnailURI }}
+                        usePoster
+                        style={{
+                          width: 300,
+                          height: 200,
+                          marginRight: 15,
+                          borderRadius: 10,
+                        }}
+                        useNativeControls
+                        resizeMode="contain"
+                      />
+                    </View>
+                  )}
+                  keyExtractor={(item) => item.id.toString()}
+                  contentContainerStyle={{
+                    height: 220,
+                    // width: "100%",
+                    // borderColor: "white",
+                    // borderWidth: 2,
+                    paddingLeft: 8,
+                    alignItems: "center",
+                  }}
+                />
+              </>
+            ) : null}
 
-            <View style={{ padding: 10, paddingBottom: 10 }}>
-              <Text style={styles.h2}>Games in Series</Text>
-            </View>
-            <FlatList
-              horizontal
-              data={gameSeries}
-              renderItem={
-                renderGameCard
-                // ({ item }) => (
-                // <>
-                //   <Lightbox>
-                //     <ImageElement
-                //       source={{ uri: item.background_image }}
-                //       style={{
-                //         width: 200,
-                //         height: 200,
-                //         marginRight: 15,
-                //         borderRadius: 20,
-                //       }}
-                //       PlaceholderContent={
-                //         <ActivityIndicator
-                //           color={COLORS.darkGrey}
-                //           size="large"
-                //         />
-                //       }
-                //     />
-                //   </Lightbox>
-                //   <View
-                //     style={{
-                //       position: "absolute",
-                //       left: 0,
-                //       bottom: 0,
-                //       padding: 12,
-                //       width: 200,
-                //       backgroundColor: "rgba(0,0,0,0.5)",
-                //       alignItems: "center",
-                //       borderBottomEndRadius: 20,
-                //       borderBottomStartRadius: 20,
-                //     }}
-                //   >
-                //     <Text
-                //       style={{
-                //         ...styles.h3,
-                //         fontSize: 13,
-                //         textAlign: "center",
-                //         textShadowColor: "rgba(0, 0, 0, 1)",
-                //         textShadowOffset: { width: -1, height: 1 },
-                //         textShadowRadius: 5,
-                //       }}
-                //     >
-                //       {item.name}
-                //     </Text>
-                //   </View>
-                // </>
-              }
-              keyExtractor={(item) => item.id.toString()}
-              contentContainerStyle={{
-                height: 220,
-                // width: "100%",
-                // borderColor: "white",
-                // borderWidth: 2,
-                paddingLeft: 8,
-                alignItems: "center",
-              }}
-            />
+            {gameSeries.length != 0 ? (
+              <>
+                <View style={{ padding: 10, paddingBottom: 10 }}>
+                  <Text style={styles.h2}>Games in Series</Text>
+                </View>
+                <FlatList
+                  horizontal
+                  data={gameSeries}
+                  renderItem={renderGameCard}
+                  keyExtractor={(item) => item.id.toString()}
+                  contentContainerStyle={{
+                    height: 220,
+                    // width: "100%",
+                    // borderColor: "white",
+                    // borderWidth: 2,
+                    paddingLeft: 8,
+                    alignItems: "center",
+                  }}
+                />
+              </>
+            ) : null}
           </Animated.View>
         </ScrollView>
         {/* </View> */}
