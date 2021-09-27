@@ -13,7 +13,7 @@ import requests from "../api/Requests";
 import { GamesContext } from "../context/GamesContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { GameCard } from "../components/GameCard";
-import { Chip, TabView } from "react-native-elements";
+import { Chip, TabView, Icon } from "react-native-elements";
 
 import { Tab } from "react-native-elements";
 import { Modal } from "react-native";
@@ -234,6 +234,7 @@ const HomeScreen = ({ navigation }) => {
             horizontal={true}
             renderItem={renderChip}
             keyExtractor={(item) => item.id.toString()}
+            showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
               // width: "100%",
               alignItems: "center",
@@ -277,16 +278,34 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </View>
         ) : (
-          // </Modal>
-          <FlatList
-            key={1}
-            data={games}
-            extraData={games}
-            numColumns={2}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={{ alignItems: "center" }}
-          />
+          <>
+            <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+              <Icon
+                name={chips[selectedChip].iconName}
+                type={chips[selectedChip].iconType}
+                color="#517fa4"
+              />
+              <Text
+                style={{
+                  ...styles.h3,
+                  textAlign: "right",
+                  paddingHorizontal: 15,
+                  marginBottom: 10,
+                }}
+              >
+                {chips[selectedChip].title} Games
+              </Text>
+            </View>
+            <FlatList
+              key={1}
+              data={games}
+              extraData={games}
+              numColumns={2}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id.toString()}
+              contentContainerStyle={{ alignItems: "center" }}
+            />
+          </>
         )}
 
         {/* <FlatList
@@ -317,6 +336,11 @@ const styles = StyleSheet.create({
   h2: {
     fontFamily: "Noah-Black",
     fontSize: 30,
+    color: COLORS.lightGrey,
+  },
+  h3: {
+    fontFamily: "Noah-Bold",
+    fontSize: 18,
     color: COLORS.lightGrey,
   },
   p: {
