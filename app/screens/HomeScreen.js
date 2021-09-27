@@ -20,6 +20,7 @@ import { Tab } from "react-native-elements";
 const HomeScreen = ({ navigation }) => {
   const [games, setGames] = useContext(GamesContext);
   const [tabIndex, setTabIndex] = useState(0);
+  const [selectedChip, setSelectedChip] = useState(0);
   const [indexToAnimate, setIndexToAnimate] = useState(0);
   const [refresh, setRefresh] = useState(false);
   const {
@@ -127,7 +128,9 @@ const HomeScreen = ({ navigation }) => {
     },
   ]);
 
-  const fetchGames = async (type) => {
+  const fetchGames = async (type, chipID) => {
+    setGames(null);
+    setSelectedChip(chipID);
     try {
       const request = await axios.get(type);
 
@@ -158,9 +161,9 @@ const HomeScreen = ({ navigation }) => {
   const renderChip = ({ item, index }) => (
     <Chip
       key={index}
-      type={item.filled ? "solid" : "outline"}
+      type={selectedChip === item.id ? "solid" : "outline"}
       title={item.title}
-      onPress={() => fetchGames(item.search, item)}
+      onPress={() => fetchGames(item.search, item.id)}
       buttonStyle={{
         // backgroundColor: COLORS.mediumGrey,
         borderWidth: 2,
@@ -199,7 +202,7 @@ const HomeScreen = ({ navigation }) => {
   );
 
   useEffect(() => {
-    fetchGames(fetchTrendingGames);
+    fetchGames(fetchTrendingGames, 0);
   }, []);
 
   // useEffect(() => {
