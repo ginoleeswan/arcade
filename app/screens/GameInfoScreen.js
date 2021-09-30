@@ -10,7 +10,6 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
-  TouchableHighlight,
   FlatList,
 } from "react-native";
 // import { Image } from "react-native-elements";
@@ -21,15 +20,19 @@ import { table } from "table";
 import Accordion from "react-native-collapsible/Accordion";
 import dateFormat from "dateformat";
 import { Image as ImageElement, Chip } from "react-native-elements";
+import ReadMore from "@fawazahmed/react-native-read-more";
 
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import Header from "../components/Header";
 import { COLORS } from "../styles/colors";
 import IGDBrequests from "../api/IGDBrequests";
 import { Icon, Rating, AirbnbRating } from "react-native-elements";
 import { SharedElement } from "react-navigation-shared-element";
 import Lightbox from "react-native-lightbox-v2";
-import { Video, AVPlaybackStatus } from "expo-av";
+import { Video } from "expo-av";
 import { GameCard } from "../components/GameCard";
 
 const regex = /(<([^>]+)>)/gi;
@@ -58,6 +61,35 @@ const GameInfoScreen = ({ route, navigation }) => {
     // flex: 1,
     // width: null,
   };
+
+  const insets = useSafeAreaInsets();
+
+  const scrollY = new Animated.Value(0);
+  const translateY = scrollY.interpolate({
+    inputRange: [0, 270 + insets.top],
+    outputRange: [0, insets.top - 270],
+    extrapolate: "clamp",
+  });
+  const translateYGameTitle = scrollY.interpolate({
+    inputRange: [0, 270 + insets.top],
+    outputRange: [0, insets.top + 18],
+    extrapolate: "clamp",
+  });
+  const sizeGameTitle = scrollY.interpolate({
+    inputRange: [180, 270 + insets.top],
+    outputRange: [1, 0.7],
+    extrapolate: "clamp",
+  });
+  const translateYGameImage = scrollY.interpolate({
+    inputRange: [0, 270 + insets.top],
+    outputRange: [0, insets.top + 180],
+    extrapolate: "clamp",
+  });
+  const fadeOutOnScroll = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
 
   const SECTIONS = [
     {
@@ -341,11 +373,21 @@ const GameInfoScreen = ({ route, navigation }) => {
           backgroundColor="transparent"
           barStyle="light-content"
         />
+        <View style={{ position: "absolute", top: 50, left: 0, zIndex: 20 }}>
+          <Header title={""} backbutton={true} navigation={navigation} />
+        </View>
 
-        <View style={styles.gameBackgroundImageContainer}>
-          <View style={{ position: "absolute", top: 50, left: 0, zIndex: 200 }}>
-            <Header title={""} backbutton={true} navigation={navigation} />
-          </View>
+        <Animated.View
+          style={{
+            ...styles.gameBackgroundImageContainer,
+            transform: [{ translateY: translateY }],
+          }}
+        >
+          {/* <Animated.View
+            style={{
+              transform: [{ translateY: translateYGameImage }],
+            }}
+          > */}
           <SharedElement id={game.id}>
             <Image
               source={{ uri: game.background_image }}
@@ -354,6 +396,7 @@ const GameInfoScreen = ({ route, navigation }) => {
             />
           </SharedElement>
           <View style={styles.imageOverlay}></View>
+          {/* </Animated.View> */}
           {/* <View style={styles.gameLogoContainer}>
                 <Image
                 source={require("../assets/icons/grand-theft-auto-v.png")}
@@ -361,14 +404,20 @@ const GameInfoScreen = ({ route, navigation }) => {
                 />
               </View> */}
 
-          <Animated.View style={{ ...styles.gameMainInfoContainer, opacity }}>
-            <View
+          <Animated.View
+            style={{
+              ...styles.gameMainInfoContainer,
+              opacity,
+            }}
+          >
+            <Animated.View
               style={{
                 width: 80,
                 backgroundColor: COLORS.lightGrey,
                 alignItems: "center",
                 marginBottom: 5,
                 borderRadius: 5,
+                opacity: fadeOutOnScroll,
               }}
             >
               <Text
@@ -380,22 +429,33 @@ const GameInfoScreen = ({ route, navigation }) => {
               >
                 {dateFormat(game.released, "mmm d, yyyy")}
               </Text>
-            </View>
-            <View
+            </Animated.View>
+            <Animated.View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "center",
+                opacity: fadeOutOnScroll,
               }}
             >
               {parentPlatforms}
-            </View>
-            <Text
-              style={{ ...styles.h2, textAlign: "center", marginBottom: 20 }}
+            </Animated.View>
+            <Animated.View
+              style={{
+                // backgroundColor: "blue",
+                transform: [
+                  { translateY: translateYGameTitle },
+                  { scale: sizeGameTitle },
+                ],
+              }}
             >
-              {game.name}
-            </Text>
-            <View style={{ top: -30 }}>
+              <Text
+                style={{ ...styles.h2, textAlign: "center", marginBottom: 20 }}
+              >
+                {game.name}
+              </Text>
+            </Animated.View>
+            <Animated.View style={{ top: -30, opacity: fadeOutOnScroll }}>
               <AirbnbRating
                 count={5}
                 size={20}
@@ -408,13 +468,19 @@ const GameInfoScreen = ({ route, navigation }) => {
                 reviews={["Terrible", "Bad", "Okay", "Good", "Great"]}
                 showRating
               />
-            </View>
+            </Animated.View>
           </Animated.View>
-        </View>
+        </Animated.View>
 
-        <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 10 }}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 350, top: 340 }}
+          onScroll={(e) => {
+            scrollY.setValue(e.nativeEvent.contentOffset.y);
+          }}
+          scrollEventThrottle={6}
+        >
           <Animated.View style={{ ...styles.infoContainer, opacity }}>
-            <View style={{ padding: 10 }}>
+            {/* <View style={{ padding: 10 }}>
               <Accordion
                 sections={SECTIONS}
                 activeSections={activeSections}
@@ -439,6 +505,17 @@ const GameInfoScreen = ({ route, navigation }) => {
                 }}
                 onChange={setActiveSections}
               />
+            </View> */}
+
+            <View style={{ padding: 10 }}>
+              <Text style={styles.h2}>About</Text>
+              <ReadMore
+                numberOfLines={3}
+                style={styles.p}
+                seeMoreText={"Read More"}
+              >
+                {summary}
+              </ReadMore>
             </View>
 
             <View
@@ -681,24 +758,25 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 40,
   },
   gameBackgroundImageContainer: {
-    // width: "100%",
+    width: "100%",
     // height: "100%",
-    // position: "absolute",
-    // top: 0,
-    // left: 0,
-    // zIndex: -1,
-    // backgroundColor: "red",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    zIndex: 10,
+    // overflow: "hidden",
+    backgroundColor: "red",
     borderBottomStartRadius: 40,
     borderBottomEndRadius: 40,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 3,
     },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.55,
     shadowRadius: 3.84,
 
-    elevation: 5,
+    elevation: 10,
   },
   gameLogoContainer: {
     alignItems: "center",
@@ -709,9 +787,10 @@ const styles = StyleSheet.create({
   },
   gameMainInfoContainer: {
     width: "100%",
-    height: "100%",
+    // height: "100%",
     position: "absolute",
     alignItems: "center",
+    // backgroundColor: "pink",
     padding: 10,
     top: 150,
     left: 0,
