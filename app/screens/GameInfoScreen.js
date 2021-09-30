@@ -714,9 +714,6 @@ const GameInfoScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   background: {
-    // height: Dimensions.get("window").height,
-    // width: Dimensions.get("window").width,
-    // overflow: "hidden",
     backgroundColor: COLORS.darkGrey,
     flex: 1,
   },
@@ -765,7 +762,7 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 10,
     // overflow: "hidden",
-    backgroundColor: "red",
+    // backgroundColor: "red",
     borderBottomStartRadius: 40,
     borderBottomEndRadius: 40,
     shadowColor: "#000",
