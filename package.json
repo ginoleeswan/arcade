@@ -8,6 +8,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@fawazahmed/react-native-read-more": "^2.1.1",
     "@react-native-masked-view/masked-view": "0.2.4",
     "@react-navigation/bottom-tabs": "^5.11.15",
     "@react-navigation/native": "^5.9.8",
