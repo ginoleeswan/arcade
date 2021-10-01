@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   Animated,
   Dimensions,
@@ -34,6 +34,7 @@ import { SharedElement } from "react-navigation-shared-element";
 import Lightbox from "react-native-lightbox-v2";
 import { Video } from "expo-av";
 import { GameCard } from "../components/GameCard";
+import { GameLoadingContext } from "../context/GameLoadingContext";
 
 const regex = /(<([^>]+)>)/gi;
 
@@ -41,6 +42,7 @@ const GameInfoScreen = ({ route, navigation }) => {
   const { game, key, screenshots, trailers, stores, series } = route.params;
 
   const [visible, setIsVisible] = useState(false);
+  const [gameLoading, setGameLoading] = useContext(GameLoadingContext);
 
   const [activeSections, setActiveSections] = useState([]);
   const [arrowDirection, setArrowDirection] = useState(true);
@@ -597,7 +599,20 @@ const GameInfoScreen = ({ route, navigation }) => {
               horizontal
               data={screenshotURI}
               renderItem={({ item }) => (
-                <Lightbox activeProps={activeLightboxProps}>
+                <Lightbox
+                  activeProps={activeLightboxProps}
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: {
+                      width: 0,
+                      height: 4,
+                    },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4.65,
+
+                    elevation: 8,
+                  }}
+                >
                   <ImageElement
                     source={{ uri: item.uri }}
                     style={{
@@ -618,7 +633,7 @@ const GameInfoScreen = ({ route, navigation }) => {
                 // width: "100%",
                 // borderColor: "white",
                 // borderWidth: 2,
-                paddingLeft: 8,
+                paddingLeft: 15,
                 alignItems: "center",
               }}
             />
