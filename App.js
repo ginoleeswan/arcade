@@ -8,6 +8,7 @@ import AppLoading from "expo-app-loading";
 import { HomeNavigation } from "./app/navigation/HomeNavigation";
 import { GamesProvider } from "./app/context/GamesContext";
 import { StatusBar } from "react-native";
+import { GameLoadingProvider } from "./app/context/GameLoadingContext";
 
 export default function App() {
   let [fontsLoaded] = useFonts({
@@ -23,16 +24,18 @@ export default function App() {
   } else {
     return (
       <GamesProvider>
-        <SafeAreaProvider>
-          <StatusBar
-            translucent
-            backgroundColor="transparent"
-            barStyle="light-content"
-          />
-          <NavigationContainer>
-            <HomeNavigation />
-          </NavigationContainer>
-        </SafeAreaProvider>
+        <GameLoadingProvider>
+          <SafeAreaProvider>
+            <StatusBar
+              translucent
+              backgroundColor="transparent"
+              barStyle="light-content"
+            />
+            <NavigationContainer>
+              <HomeNavigation />
+            </NavigationContainer>
+          </SafeAreaProvider>
+        </GameLoadingProvider>
       </GamesProvider>
     );
   }
