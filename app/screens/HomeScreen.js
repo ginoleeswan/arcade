@@ -212,7 +212,7 @@ const HomeScreen = ({ navigation }) => {
     setGameSectionTitle("Search");
     setGameSectionIconName("search");
     setGameSectionIconType("material-icons");
-    // const formattedQuery = text.toLowerCase();
+    const formattedQuery = text.toLowerCase();
     // const data = heroNames.filter((item) => {
     //   // return contains(name, formattedQuery);
     //   return item.name.toLowerCase().includes(formattedQuery);
@@ -222,12 +222,12 @@ const HomeScreen = ({ navigation }) => {
     try {
       setLoading(true);
       const request = await axios.get(
-        `games?search=${text}&key=a5dc51990cf541aba0f759e85e41a324&ordering=~rating`
+        `games?search=${formattedQuery}&key=a5dc51990cf541aba0f759e85e41a324&ordering=~rating&page_size=50&search_precise=true`
       );
 
       setGames(request.data.results);
       setLoading(false);
-      // console.log(games);
+      // console.log(request.data.results);
     } catch (error) {
       console.error(error);
       setLoading(false);
