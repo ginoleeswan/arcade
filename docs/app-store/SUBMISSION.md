@@ -62,9 +62,22 @@ These are the actual blockers now. All are console work, none is code.
 8. **The name.** "SideQuest" is an established VR app store with its own iOS app. App Store names must be unique across the store. If "Sidequest" is refused when creating the app record, use one of: `Sidequest: Finish Your Games` (28), `Sidequest – Backlog Planner` (27), `Sidequest: Game Backlog` (23). The in-app name and bundle id do not change.
 9. **Age rating**, **App Privacy**, **screenshots** — all filled in ASC; answers and a capture script are in this folder.
 
+### iPad
+
+`supportsTablet: true` means the app is reviewed on an iPad, iPad screenshots (13") are mandatory, and — because Expo writes all four `UISupportedInterfaceOrientations~ipad` whenever tablets are on and `requireFullScreen` is off — the app rotates and runs in Split View and Slide Over. So the iPad layout is not a checkbox; it is what the reviewer sees first.
+
+What ships:
+
+- **The wide layout, on native.** The web already had a "desk" layout — the two-column game page with its rail, the plan's dials side by side, the four-up library, the home stage with the hero art — but `useBreakpoint` denied it to native, so an iPad drew the phone page in a 720-point column. The breakpoint now separates _layout_ (`isExpanded`: is there room for two columns — true on a desk and a tablet) from _chrome_ (`isDesk`: is there a sidebar — web only). Every page keeps its wide layout on a tablet; every chrome decision (top bar vs. back button, clearance, footer inset) reads the desk flag, so the native tab bar and stack stay in charge.
+- **A tablet shell.** `DesktopShell` renders a `TabletShell` off the web: the same padded column the wide pages were drawn for, and on tab roots one row of chrome the tab bar cannot carry — the wordmark, the search field (Home), and You. No sidebar, no sheet. Pushed screens (game, You) get the column only; their back button already floats over the hero.
+- **Browse on the tablet home.** The desk browses from the sidebar. The tablet home gets the phone's Browse rail under the stage instead, so every section is one tap away.
+- **Threshold.** Native goes wide at 800 points (`BREAKPOINTS.tablet`): every iPad in portrait except the mini, and every iPad in landscape. The mini in portrait and a Split View pane keep the phone layout, which they are the size of. Rotation re-lays the page (everything reads `useWindowDimensions`).
+- **Short pages find the floor.** The native scroller now grows to the viewport, so a footer pins to the bottom of Import, Account and the legal pages instead of floating mid-screen with empty ground under it.
+
+How to look at it without a Mac: `EXPO_PUBLIC_PREVIEW_TABLET=1 npx expo export --platform web --output-dir dist-ipad && npm run shots:ipad` renders every screen at every iPad size (both orientations) into `e2e/ipad-shots/`. It is react-native-web in Chromium, so it shows the layout, not UIKit's chrome — the simulator run in step 5 confirms the rest.
+
 ### Decisions to make (defaults chosen; change if you disagree)
 
-- **iPad.** `supportsTablet: true` means iPad screenshots (13") are mandatory and the app is reviewed on an iPad. The layout is responsive (the "desk" layouts exist for exactly this), so the default is to keep it. Setting it to `false` removes the iPad screenshot requirement but also removes iPad from the store listing.
 - **Age rating.** The app shows third-party artwork, screenshots and trailers for every game on RAWG, which includes M-rated titles. The honest answers (infrequent/mild across violence, mature themes, profanity, suggestive content) land at 12+ under the old scheme and 13+ under the 2025 questionnaire. Under-rating and being caught is worse than 13+.
 - **Categories.** Primary Entertainment, secondary Utilities. "Games" is for games only and would be rejected.
 - **Pricing.** Free, all territories, no IAP.
@@ -128,7 +141,7 @@ Wait for processing (10–30 min; the email says "completed processing"). Instal
 - [ ] Universal link: tap a `gosidequest.vercel.app/game/3498` link in Notes — opens the app
 - [ ] Memcard share produces an image
 - [ ] Kill and relaunch: nothing lost
-- [ ] iPad (simulator is fine): every tab lays out, nothing clipped
+- [ ] iPad, both orientations: the wide layout on Home, Library, Plan, a game page and You; the brand bar with search on Home; rotate mid-page; Split View at half width falls back to the phone layout
 
 ### Step 6 — Screenshots
 

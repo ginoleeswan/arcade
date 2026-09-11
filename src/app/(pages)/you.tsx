@@ -170,7 +170,7 @@ export default function YouScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const topPad = useTopPad(true);
-  const { isExpanded } = useBreakpoint();
+  const { isExpanded, isDesk } = useBreakpoint();
   const { entries, count, exportJson } = useLibrary();
   const { session, available } = useAuth();
   const { status: syncStatus } = useSync();
@@ -236,7 +236,7 @@ export default function YouScreen() {
           still reserving the clearance the missing button would have
           needed. A hundred and twenty points of nothing, above a dead
           end. */}
-      {isExpanded ? null : (
+      {isDesk ? null : (
         <View style={[styles.backButton, { top: insets.top + SPACING.sm }]}>
           <BackButton onImage={Boolean(cover)} />
         </View>
@@ -272,7 +272,13 @@ export default function YouScreen() {
               pointerEvents="none"
             />
 
-            <View style={[styles.identity, isExpanded && styles.identityWide]}>
+            <View
+              style={[
+                styles.identity,
+                !isExpanded && styles.identityColumn,
+                isExpanded && styles.identityWide,
+              ]}
+            >
               <View style={[styles.avatar, session && styles.avatarSynced]}>
                 {session ? (
                   <Text style={styles.monogram}>
@@ -407,7 +413,9 @@ export default function YouScreen() {
     </>
   );
   return isExpanded ? (
-    <DesktopShell activeKey="you">{page}</DesktopShell>
+    <DesktopShell activeKey="you" bar="none">
+      {page}
+    </DesktopShell>
   ) : (
     <Textured style={styles.background}>{page}</Textured>
   );
@@ -463,6 +471,22 @@ const styles = StyleSheet.create({
   },
 
   identity: { gap: SPACING.xs },
+  /**
+   * On the same left edge as the doors and the rows under it.
+   *
+   * The body below is a column capped at `maxContentWidth` and centred,
+   * which on a phone is the whole width and on an iPad is a column in
+   * the middle. The identity used to sit at the masthead's gutter
+   * regardless — flush left on a 1024-point screen while everything it
+   * introduced started three hundred points further in. Capped to the
+   * same width, minus the gutter the masthead already pays, the name
+   * and the first door share an edge at every width.
+   */
+  identityColumn: {
+    width: '100%',
+    maxWidth: LAYOUT.maxContentWidth - GUTTER * 2,
+    alignSelf: 'center',
+  },
   /** Avatar beside the name, on the baseline, where the width allows. */
   identityWide: {
     flexDirection: 'row',

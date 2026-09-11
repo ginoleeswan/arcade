@@ -30,11 +30,11 @@ export function ContentPage({
 }: Props) {
   const insets = useSafeAreaInsets();
   const topPad = useTopPad(true);
-  const { isExpanded } = useBreakpoint();
+  const { isDesk } = useBreakpoint();
   return (
     <Textured style={styles.background}>
       <PageTitle>{`${documentTitle ?? title} — Sidequest`}</PageTitle>
-      {isExpanded ? (
+      {isDesk ? (
         <AppHeader />
       ) : (
         <View style={[styles.backButton, { top: insets.top + SPACING.sm }]}>

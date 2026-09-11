@@ -71,7 +71,7 @@ export default function TidyScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const topPad = useTopPad(true);
-  const { isExpanded } = useBreakpoint();
+  const { isDesk } = useBreakpoint();
   const { entries, removeMany, moveMany } = useLibrary();
   const { durationOf } = useDurations();
   const toast = useToast();
@@ -174,7 +174,7 @@ export default function TidyScreen() {
   return (
     <Textured style={styles.background}>
       <PageTitle>Backlog amnesty — Sidequest</PageTitle>
-      {isExpanded ? (
+      {isDesk ? (
         <AppHeader />
       ) : (
         <View style={[styles.backButton, { top: insets.top + SPACING.sm }]}>

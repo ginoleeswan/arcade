@@ -181,7 +181,7 @@ const EYEBROW: Record<SyncStatus['state'], string> = {
 export default function AccountScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { isExpanded } = useBreakpoint();
+  const { isDesk } = useBreakpoint();
   const topPad = useTopPad(true);
   const { session, available, deleteAccount } = useAuth();
   const { status, stuck, syncNow } = useSync();
@@ -192,7 +192,7 @@ export default function AccountScreen() {
   return (
     <Textured style={styles.background}>
       <PageTitle>Account — Sidequest</PageTitle>
-      {isExpanded ? (
+      {isDesk ? (
         <AppHeader />
       ) : (
         <View style={[styles.backButton, { top: insets.top + SPACING.sm }]}>

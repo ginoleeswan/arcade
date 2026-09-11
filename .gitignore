@@ -44,3 +44,5 @@ coverage/
 
 # Store screenshots are captured locally and uploaded by hand.
 docs/app-store/screenshots/
+e2e/ipad-shots/
+dist-ipad/

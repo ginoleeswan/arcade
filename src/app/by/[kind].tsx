@@ -35,7 +35,7 @@ export default function ByCreatorScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const topPad = useTopPad(true);
-  const { isExpanded, columns } = useBreakpoint();
+  const { isDesk, columns } = useBreakpoint();
   const params = useLocalSearchParams<{
     kind?: string;
     id?: string;
@@ -71,7 +71,7 @@ export default function ByCreatorScreen() {
   return (
     <Textured style={styles.background}>
       <PageTitle>{`${name} — Sidequest`}</PageTitle>
-      {isExpanded ? (
+      {isDesk ? (
         <AppHeader />
       ) : (
         <View style={[styles.backButton, { top: insets.top + SPACING.sm }]}>

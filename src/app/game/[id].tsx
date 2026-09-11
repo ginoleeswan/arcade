@@ -794,7 +794,7 @@ export default function GameInfoScreen() {
   const [playing, setPlaying] = useState<number | null>(null);
   const { durationOf, learnDurations } = useDurations();
 
-  const { isExpanded, width } = useBreakpoint();
+  const { isExpanded, isDesk, width } = useBreakpoint();
   /** The band takes a share of the window; see `bannerHeight`. */
   const { height: windowHeight } = useWindowDimensions();
   const hasNote = usePersonalNote(Number(id));
@@ -942,7 +942,7 @@ export default function GameInfoScreen() {
 
   if (isPending && fetchStatus !== 'paused') {
     return isExpanded ? (
-      <DesktopShell activeKey={null} foldByDefault flush>
+      <DesktopShell activeKey={null} foldByDefault flush bar="none">
         {/* The name is not known yet, but a blank tab is never right. */}
         <PageTitle>Sidequest</PageTitle>
         <View
@@ -953,7 +953,7 @@ export default function GameInfoScreen() {
         {/* Same join as the loaded hero: the bones run to the top of the
             document too, so they need it just as much. */}
         {!isExpanded && <ChromeWeld height={insets.top + WELD_HEIGHT} />}
-        {isExpanded ? null : (
+        {isDesk ? null : (
           <View style={[styles.backButton, { top: insets.top + SPACING.sm }]}>
             <BackButton onImage />
           </View>
@@ -2367,7 +2367,7 @@ export default function GameInfoScreen() {
     <>
       <PageTitle>{`${game.name} — Sidequest`}</PageTitle>
       <View style={styles.container}>
-        {isExpanded ? null : (
+        {isDesk ? null : (
           <View style={[styles.backButton, { top: insets.top + SPACING.sm }]}>
             <BackButton onImage />
           </View>
@@ -2510,7 +2510,7 @@ export default function GameInfoScreen() {
     </>
   );
   return isExpanded ? (
-    <DesktopShell activeKey={null} foldByDefault flush>
+    <DesktopShell activeKey={null} foldByDefault flush bar="none">
       {page}
     </DesktopShell>
   ) : (
