@@ -43,6 +43,7 @@ const EXPLORE_COMPACT = EXPLORE.filter((link) => link.href === '/about');
 const LEGAL = [
   { label: 'Terms', href: '/terms' },
   { label: 'Privacy', href: '/privacy' },
+  { label: 'Support', href: '/support' },
 ] as const;
 
 function LinkColumn({

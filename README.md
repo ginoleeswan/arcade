@@ -172,6 +172,15 @@ assets/         # fonts, icons, images
 docs/           # product spec, validation, screenshots
 ```
 
+## App Store
+
+Everything the iOS submission needs is under [`docs/app-store/`](./docs/app-store/):
+the audit and runbook (`SUBMISSION.md`), every listing field with the
+App Privacy and age-rating answers (`listing.md`), and the EAS Metadata
+file (`store.config.json`) that `eas metadata:push` reads.
+`scripts/store-screenshots.sh` captures the store screenshots from the
+simulator.
+
 ## Author
 
 **Gino Swanepoel** —
